@@ -13,6 +13,12 @@ This allows Game Masters to automate events, send chat messages, or trigger visu
   - Fear Max (12)
   - Fear Min (0)
 
+## Manual Installation
+
+To install this module manually, use the following manifest URL in the "Install Module" dialog within Foundry VTT:
+
+`https://raw.githubusercontent.com/brunocalado/daggerheart-fear-macros/main/module.json`
+
 ## Getting Started
 
 This module includes a **Compendium Pack** named **Daggerheart: Fear Macros** containing basic examples.
@@ -21,6 +27,10 @@ This module includes a **Compendium Pack** named **Daggerheart: Fear Macros** co
 2. Locate **Daggerheart: Fear Macros**.
 3. Import the macros into your world.
 4. The module settings are pre-configured to use these default names.
+
+<p align="center">
+  <img width="600" src="docs/macros.webp">
+</p>
 
 ## Configuration
 
@@ -32,6 +42,14 @@ Go to the **Module Settings** tab in Foundry VTT to configure the behavior:
 4. **Macro: Fear Min (0)**: Runs when Fear reaches exactly 0.
 
 > **Note:** The module executes triggers ONLY on the GM's client to prevent duplicate effects.
+
+<p align="center">
+  <img width="600" src="docs/settings.webp">
+</p>
+
+## 📜 Changelog
+
+You can read the full history of changes in the [CHANGELOG](CHANGELOG.md).
 
 ## License
 
