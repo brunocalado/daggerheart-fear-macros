@@ -29,7 +29,7 @@ This module includes a **Compendium Pack** named **Daggerheart: Fear Macros** co
 4. The module settings are pre-configured to use these default names.
 
 <p align="center">
-  <img width="600" src="docs/macros.webp">
+  <img width="400" src="docs/macros.webp">
 </p>
 
 ## Configuration
@@ -44,7 +44,7 @@ Go to the **Module Settings** tab in Foundry VTT to configure the behavior:
 > **Note:** The module executes triggers ONLY on the GM's client to prevent duplicate effects.
 
 <p align="center">
-  <img width="600" src="docs/settings.webp">
+  <img width="800" src="docs/settings.webp">
 </p>
 
 ## 📜 Changelog
@@ -52,5 +52,7 @@ Go to the **Module Settings** tab in Foundry VTT to configure the behavior:
 You can read the full history of changes in the [CHANGELOG](CHANGELOG.md).
 
 ## License
+
+Code license at [LICENSE](LICENSE).
 
 This module is an independent project and is not affiliated with the official Daggerheart system creators.
