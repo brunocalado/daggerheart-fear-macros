@@ -1,6 +1,6 @@
 /**
  * Daggerheart: Fear Macros
- * Version: 1.4.0
+ * Version: 1.5.0
  * Author: Mestre Digital
  * Description: Triggers macros based on Daggerheart Fear resource changes.
  */
@@ -10,12 +10,30 @@ const FEAR_SETTING_KEY = 'daggerheart.ResourcesFear';
 
 let previousFear = null;
 
+/**
+ * Helper to retrieve the dynamic Max Fear value from Daggerheart system settings.
+ * Defaults to 12 if not found.
+ */
+function getMaxFear() {
+    try {
+        // Ensure CONFIG.DH exists (Safety check)
+        if (CONFIG.DH && CONFIG.DH.SETTINGS && CONFIG.DH.SETTINGS.gameSettings) {
+            const homebrewSettings = game.settings.get(CONFIG.DH.id, CONFIG.DH.SETTINGS.gameSettings.Homebrew);
+            return Number(homebrewSettings?.maxFear) || 12;
+        }
+        return 12;
+    } catch (e) {
+        console.warn(`${MODULE_ID} | Could not retrieve Max Fear from system settings, defaulting to 12.`, e);
+        return 12;
+    }
+}
+
 Hooks.once('init', () => {
     // --- MACRO SETTINGS ---
 
     game.settings.register(MODULE_ID, 'macroIncrease', {
         name: "Macro: Increase Fear",
-        hint: "Exact name of the macro to execute when Fear increases (and is not 12).",
+        hint: "Exact name of the macro to execute when Fear increases (and has not reached Max).",
         scope: "world",
         config: true,
         type: String,
@@ -32,8 +50,8 @@ Hooks.once('init', () => {
     });
 
     game.settings.register(MODULE_ID, 'macroMaxFear', {
-        name: "Macro: Fear Max (12)",
-        hint: "Exact name of the macro to execute when Fear reaches exactly 12. Triggers instead of the Increase macro.",
+        name: "Macro: Fear Max (System Limit)",
+        hint: "Exact name of the macro to execute when Fear reaches the maximum value defined in System Settings (Homebrew). Triggers instead of the Increase macro.",
         scope: "world",
         config: true,
         type: String,
@@ -98,12 +116,14 @@ function handleFearChange(newFear) {
     // MANDATORY: Only run on GM Client to prevent duplicates
     if (!game.user.isGM) return;
 
-    // Priority 1: Max Value (12)
-    if (newFear === 12) {
+    const maxFear = getMaxFear();
+
+    // Priority 1: Max Value (Dynamic from System Settings)
+    if (newFear >= maxFear) {
         triggerMacro('macroMaxFear');
     } 
     // Priority 2: Min Value (0)
-    else if (newFear === 0) {
+    else if (newFear <= 0) {
         triggerMacro('macroZeroFear');
     }
     // Priority 3: Standard Increase
