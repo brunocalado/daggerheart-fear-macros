@@ -1,11 +1,10 @@
 {
   "id": "daggerheart-fear-macros",
   "title": "Daggerheart: Fear Macros",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "compatibility": {
     "minimum": "13",
-    "verified": "13",
-    "maximum": "13"
+    "verified": "13"
   },
   "authors": [
     {
