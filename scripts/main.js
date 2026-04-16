@@ -394,7 +394,7 @@ Hooks.once('init', () => {
     // Button in Module Settings that opens the drag-drop configuration dialog
     game.settings.registerMenu(MODULE_ID, 'macroConfigMenu', {
         name: "Configure Fear Macros",
-        label: "Configure Macros",
+        label: "Configure Fear Macros",
         hint: "Assign macros to each Fear trigger event.",
         icon: "fas fa-dragon",
         type: FearMacroConfig,

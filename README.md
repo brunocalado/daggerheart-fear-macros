@@ -55,7 +55,7 @@ Go to the **Module Settings** tab in Foundry VTT to configure the behavior.
 > **Note:** All triggers execute only on the GM's client to prevent duplicate effects. Hope macros receive the `actor` variable in scope, so you can reference the character who triggered the change inside the macro script.
 
 <p align="center">
-  <img width="800" src="docs/settings.webp" alt="Settings Example">
+  <img width="600" src="docs/settings.webp" alt="Settings Example">
 </p>
 
 ## 💬 Resource.Message() — Chat Card API
