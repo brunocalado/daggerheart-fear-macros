@@ -1,7 +1,7 @@
 {
   "id": "daggerheart-fear-macros",
-  "title": "Daggerheart: Fear Macros",
-  "version": "1.0.7",
+  "title": "Daggerheart: Resource Macros",
+  "version": "1.1.0",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -22,7 +22,7 @@
   },
   "packs": [
     {
-      "label": "Daggerheart: Fear Macros",
+      "label": "Resource Macros",
       "type": "Macro",
       "name": "daggerheart-fear-macros",
       "path": "packs/daggerheart-fear-macros",
@@ -40,7 +40,7 @@
   "esmodules": [
     "scripts/main.js"
   ],
-  
+
   "url": "https://github.com/brunocalado/daggerheart-fear-macros",
   "manifest": "https://raw.githubusercontent.com/brunocalado/daggerheart-fear-macros/main/module.json",
   "download": "https://codeload.github.com/brunocalado/daggerheart-fear-macros/zip/main"
