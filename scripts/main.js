@@ -446,6 +446,18 @@ Hooks.once('ready', async () => {
             }
         }
     }
+
+    // --- Public API ---
+    // Exposed on globalThis so macros can call Resource.Message() without imports.
+    // Defined here (ready) to ensure game context is available at call time.
+    globalThis.Resource = {
+        /**
+         * Send a styled Daggerheart chat card and optionally play a broadcast sound.
+         * @param {object} options - See buildResourceMessage() for full parameter docs.
+         * @returns {Promise<void>}
+         */
+        Message: (options) => buildResourceMessage(options)
+    };
 });
 
 /**
@@ -588,5 +600,74 @@ async function triggerMacro(settingKey) {
         await macro.execute();
     } catch (err) {
         console.error(`${MODULE_ID} | Macro execution error:`, err);
+    }
+}
+
+/**
+ * Builds and sends a styled Daggerheart chat card to all clients.
+ * Optionally plays a broadcast sound.
+ * Called via the public Resource.Message() API.
+ *
+ * @param {object}  options
+ * @param {string}  options.header          - Required. Title text displayed in the card header.
+ * @param {string}  [options.text]          - Optional. Body message text. If omitted, only the header is rendered.
+ * @param {string}  [options.image]         - Optional. Background image path for the body. Only used when text is provided.
+ * @param {string}  [options.sound]         - Optional. Path to audio file to broadcast to all clients.
+ * @param {number}  [options.volume=0.8]    - Optional. Playback volume (0.0–1.0). Defaults to 0.8.
+ * @returns {Promise<void>}
+ */
+async function buildResourceMessage({ header, text, image, sound, volume = 0.8 } = {}) {
+    if (!header) {
+        console.warn(`${MODULE_ID} | Resource.Message() called without a required "header" parameter.`);
+        return;
+    }
+
+    let content;
+
+    if (text) {
+        // Full card: header + body with optional background image
+        const backgroundStyle = image
+            ? `background-image: url('${image}'); background-repeat: no-repeat; background-position: center; background-size: cover;`
+            : `background: #1a1a1a;`;
+
+        content = `
+<div class="chat-card" style="border: 2px solid #C9A060; border-radius: 8px; overflow: hidden;">
+    <header class="card-header flexrow" style="background: #191919 !important; padding: 8px; border-bottom: 2px solid #C9A060;">
+        <h3 class="noborder" style="margin: 0; font-weight: bold; color: #C9A060 !important; font-family: 'Aleo', serif; text-align: center; text-transform: uppercase; letter-spacing: 1px; width: 100%;">
+            ${header}
+        </h3>
+    </header>
+    <div class="card-content" style="${backgroundStyle} padding: 20px; min-height: 150px; display: flex; align-items: center; justify-content: center; text-align: center; position: relative;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 0;"></div>
+        <span style="color: #ffffff !important; font-size: 1.3em; font-weight: bold; text-shadow: 0px 0px 8px #000000; position: relative; z-index: 1; font-family: 'Lato', sans-serif; line-height: 1.4;">
+            ${text}
+        </span>
+    </div>
+</div>`;
+    } else {
+        // Header-only card
+        content = `
+<div class="chat-card" style="border: 2px solid #C9A060; border-radius: 8px; overflow: hidden;">
+    <header class="card-header flexrow" style="background: #191919 !important; padding: 12px 8px; display: flex; align-items: center;">
+        <h3 class="noborder" style="margin: 0; font-weight: bold; color: #C9A060 !important; font-family: 'Aleo', serif; text-align: center; text-transform: uppercase; letter-spacing: 1.5px; width: 100%; border: none;">
+            ${header}
+        </h3>
+    </header>
+</div>`;
+    }
+
+    // Send to chat — speaker alias matches the header for context
+    await ChatMessage.create({
+        content,
+        speaker: { alias: header }
+    });
+
+    // Play sound broadcast to all connected clients — independent of card rendering mode
+    if (sound) {
+        foundry.audio.AudioHelper.play({
+            src: sound,
+            volume: Number(volume) || 0.8,
+            loop: false
+        }, true);
     }
 }
