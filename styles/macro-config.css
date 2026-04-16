@@ -1,0 +1,143 @@
+/* ============================================================
+   Daggerheart: Fear Macro Configuration — Application styles
+   Loaded via module.json "styles" array.
+   ============================================================ */
+
+.fear-macro-config-app {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Top-level instruction text */
+.fear-macro-config-app .fmc-instructions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--color-warm-1, #b8860b) 8%, transparent);
+  border-left: 3px solid var(--color-warm-1, #b8860b);
+  border-radius: 3px;
+  font-size: 0.85em;
+  color: var(--color-text-secondary, #aaa);
+  font-style: italic;
+}
+
+.fear-macro-config-app .fmc-instructions i {
+  margin-top: 2px;
+  flex-shrink: 0;
+  color: var(--color-warm-1, #b8860b);
+}
+
+/* Each trigger row: label block + drop zone */
+.fmc-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Separator between rows except the last */
+.fmc-row + .fmc-row {
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border, #444);
+}
+
+/* Label block */
+.fmc-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fmc-label strong {
+  font-size: 0.95em;
+  color: var(--color-text-primary, #eee);
+  letter-spacing: 0.01em;
+}
+
+.fmc-label .fmc-hint {
+  font-size: 0.78em;
+  font-style: italic;
+  color: var(--color-text-secondary, #aaa);
+  line-height: 1.3;
+}
+
+/* ============================================================
+   Drop Zone — the primary visual affordance of the feature
+   ============================================================ */
+
+.fmc-drop-zone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Dashed border with visible rhythm — dash + gap sized for clarity */
+  border: 2px dashed var(--color-border, #555);
+  border-radius: 6px;
+  padding: 10px 14px;
+  min-height: 48px;
+  background: color-mix(in srgb, var(--color-text-primary, #fff) 3%, transparent);
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;
+}
+
+/* Placeholder icon — only visible when slot is empty */
+.fmc-drop-zone .fmc-drop-icon {
+  font-size: 1.1em;
+  color: var(--color-text-secondary, #888);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+/* Macro name text */
+.fmc-macro-name {
+  flex: 1;
+  font-size: 0.9em;
+  color: var(--color-text-primary, #eee);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Empty state */
+.fmc-macro-name.is-empty {
+  color: var(--color-text-secondary, #888);
+  font-style: italic;
+}
+
+/* Active drag-over state — clear highlight so user knows the zone accepts the drop */
+.fmc-drop-zone.drag-over {
+  border-color: var(--color-border-highlight, #7eb);
+  background: color-mix(in srgb, var(--color-border-highlight, #7eb) 10%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-border-highlight, #7eb) 20%, transparent);
+}
+
+.fmc-drop-zone.drag-over .fmc-drop-icon {
+  color: var(--color-border-highlight, #7eb);
+}
+
+/* Invalid drop feedback */
+.fmc-drop-zone.drag-invalid {
+  border-color: var(--color-level-error, #c44);
+  background: color-mix(in srgb, var(--color-level-error, #c44) 8%, transparent);
+}
+
+/* Clear button */
+.fmc-clear-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #888);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 3px;
+  font-size: 0.85em;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+
+.fmc-clear-btn:hover {
+  color: var(--color-level-error, #c44);
+  background: color-mix(in srgb, var(--color-level-error, #c44) 10%, transparent);
+}

@@ -1,83 +1,28 @@
 <div class="fear-macro-config-app">
-  <style>
-    .fear-macro-config-app {
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .fear-macro-config-app > .hint {
-      font-style: italic;
-      color: var(--color-text-dark-secondary);
-      margin-bottom: 4px;
-    }
-    .fear-macro-row {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .fear-macro-label strong {
-      display: block;
-      font-size: 0.95em;
-    }
-    .fear-macro-label .hint {
-      font-size: 0.8em;
-      font-style: italic;
-      color: var(--color-text-dark-secondary);
-    }
-    .fear-macro-slot {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border: 2px dashed var(--color-border-dark);
-      border-radius: 4px;
-      padding: 8px 10px;
-      min-height: 40px;
-      transition: border-color 0.15s, background 0.15s;
-      cursor: pointer;
-    }
-    .fear-macro-slot.drag-over {
-      border-color: var(--color-border-highlight);
-      background: color-mix(in srgb, var(--color-border-highlight) 12%, transparent);
-    }
-    .fear-macro-name {
-      flex: 1;
-      font-size: 0.9em;
-    }
-    .fear-macro-name.empty {
-      color: var(--color-text-dark-inactive);
-      font-style: italic;
-    }
-    .fear-macro-clear {
-      background: none;
-      border: none;
-      color: var(--color-text-dark-secondary);
-      cursor: pointer;
-      padding: 2px 6px;
-      font-size: 0.85em;
-      transition: color 0.15s;
-    }
-    .fear-macro-clear:hover {
-      color: var(--color-level-error);
-    }
-  </style>
-  <p class="hint">Drag a Macro from the Macro Directory or a Compendium into each slot.</p>
+
+  <p class="fmc-instructions">
+    <i class="fas fa-circle-info"></i>
+    Drag a Macro from the Macro Directory or a Compendium into each slot below.
+  </p>
 
   {{#each slots}}
-  <div class="fear-macro-row">
-    <div class="fear-macro-label">
+  <div class="fmc-row">
+    <div class="fmc-label">
       <strong>{{label}}</strong>
-      <span class="hint">{{hint}}</span>
+      <span class="fmc-hint">{{hint}}</span>
     </div>
-    <div class="fear-macro-slot" data-key="{{key}}">
-      <span class="fear-macro-name {{#unless macroName}}empty{{/unless}}">
+
+    <div class="fmc-drop-zone" data-key="{{key}}">
+      <i class="fas fa-file-code fmc-drop-icon"></i>
+      <span class="fmc-macro-name {{#unless macroName}}is-empty{{/unless}}">
         {{#if macroName}}{{macroName}}{{else}}Drop a Macro here{{/if}}
       </span>
-      <button type="button" class="fear-macro-clear" title="Remove macro"
+      <button type="button" class="fmc-clear-btn" title="Remove macro"
         style="{{#unless macroName}}display:none{{/unless}}">
         <i class="fas fa-times"></i>
       </button>
     </div>
   </div>
   {{/each}}
+
 </div>

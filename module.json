@@ -41,6 +41,10 @@
     "scripts/main.js"
   ],
 
+  "styles": [
+    "styles/macro-config.css"
+  ],
+
   "url": "https://github.com/brunocalado/daggerheart-fear-macros",
   "manifest": "https://raw.githubusercontent.com/brunocalado/daggerheart-fear-macros/main/module.json",
   "download": "https://codeload.github.com/brunocalado/daggerheart-fear-macros/zip/main"

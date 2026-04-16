@@ -89,13 +89,13 @@ class FearMacroConfig extends foundry.applications.api.HandlebarsApplicationMixi
     _onRender(context, options) {
         const html = this.element;
 
-        html.querySelectorAll('.fear-macro-slot').forEach(slot => {
+        html.querySelectorAll('.fmc-drop-zone').forEach(slot => {
             slot.addEventListener('dragover',  this._onDragOver.bind(this));
             slot.addEventListener('dragleave', this._onDragLeave.bind(this));
             slot.addEventListener('drop',      this._onDrop.bind(this));
         });
 
-        html.querySelectorAll('.fear-macro-clear').forEach(btn => {
+        html.querySelectorAll('.fmc-clear-btn').forEach(btn => {
             btn.addEventListener('click', this._onClear.bind(this));
         });
     }
@@ -108,16 +108,24 @@ class FearMacroConfig extends foundry.applications.api.HandlebarsApplicationMixi
         event.preventDefault();
         try {
             const data = JSON.parse(event.dataTransfer.getData('text/plain'));
-            if (data?.type === 'Macro') event.currentTarget.classList.add('drag-over');
-        } catch { /* ignore non-JSON or non-Macro drag payloads */ }
+            if (data?.type === 'Macro') {
+                event.currentTarget.classList.add('drag-over');
+                event.currentTarget.classList.remove('drag-invalid');
+            } else {
+                event.currentTarget.classList.add('drag-invalid');
+                event.currentTarget.classList.remove('drag-over');
+            }
+        } catch {
+            // Ignore parse errors during active drag — browser may withhold data until drop
+        }
     }
 
     /**
-     * Remove drag-over highlight when dragged item leaves the slot.
+     * Remove all drag state classes when the dragged item leaves the slot.
      * @param {DragEvent} event
      */
     _onDragLeave(event) {
-        event.currentTarget.classList.remove('drag-over');
+        event.currentTarget.classList.remove('drag-over', 'drag-invalid');
     }
 
     /**
@@ -128,7 +136,7 @@ class FearMacroConfig extends foundry.applications.api.HandlebarsApplicationMixi
     async _onDrop(event) {
         event.preventDefault();
         const slot = event.currentTarget;
-        slot.classList.remove('drag-over');
+        slot.classList.remove('drag-over', 'drag-invalid');
 
         let data;
         try {
@@ -153,10 +161,10 @@ class FearMacroConfig extends foundry.applications.api.HandlebarsApplicationMixi
         await game.settings.set(MODULE_ID, settingKey, data.uuid);
 
         // Update display without a full re-render
-        const nameEl = slot.querySelector('.fear-macro-name');
+        const nameEl = slot.querySelector('.fmc-macro-name');
         nameEl.textContent = doc.name;
-        nameEl.classList.remove('empty');
-        slot.querySelector('.fear-macro-clear').style.display = '';
+        nameEl.classList.remove('is-empty');
+        slot.querySelector('.fmc-clear-btn').style.display = '';
     }
 
     /**
@@ -164,14 +172,17 @@ class FearMacroConfig extends foundry.applications.api.HandlebarsApplicationMixi
      * @param {MouseEvent} event
      */
     async _onClear(event) {
-        const slot = event.currentTarget.closest('.fear-macro-slot');
+        // Capture references before the await — event.currentTarget is nullified by the browser
+        // once the handler yields, making any post-await access throw a TypeError.
+        const btn = event.currentTarget;
+        const slot = btn.closest('.fmc-drop-zone');
         const settingKey = slot.dataset.key;
         await game.settings.set(MODULE_ID, settingKey, "");
 
-        const nameEl = slot.querySelector('.fear-macro-name');
+        const nameEl = slot.querySelector('.fmc-macro-name');
         nameEl.textContent = "Drop a Macro here";
-        nameEl.classList.add('empty');
-        event.currentTarget.style.display = 'none';
+        nameEl.classList.add('is-empty');
+        btn.style.display = 'none';
     }
 }
 
