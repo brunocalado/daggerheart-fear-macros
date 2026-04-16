@@ -1,3 +1,9 @@
+# 1.2.0
+- [Added] Hope Macro Configuration: assign macros to Hope trigger events on player-owned actors
+- [Added] Per-actor hope cache (previousHopeMap) initialized on ready
+- [Added] updateActor hook to detect hope value changes on non-GM player actors
+- [Added] templates/hope-macro-config.hbs
+
 # 1.1.0
 - [Changed] Extracted template CSS into styles/macro-config.css
 - [Changed] Redesigned Fear Macro Configuration dialog for clarity: drop zones now have icon, separator rows, and drag-invalid feedback

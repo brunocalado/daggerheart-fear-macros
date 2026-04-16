@@ -1,0 +1,28 @@
+<div class="hope-macro-config-app">
+
+  <p class="fmc-instructions">
+    <i class="fas fa-circle-info"></i>
+    Drag a Macro from the Macro Directory or a Compendium into each slot below.
+  </p>
+
+  {{#each slots}}
+  <div class="fmc-row">
+    <div class="fmc-label">
+      <strong>{{label}}</strong>
+      <span class="fmc-hint">{{hint}}</span>
+    </div>
+
+    <div class="fmc-drop-zone" data-key="{{key}}">
+      <i class="fas fa-file-code fmc-drop-icon"></i>
+      <span class="fmc-macro-name {{#unless macroName}}is-empty{{/unless}}">
+        {{#if macroName}}{{macroName}}{{else}}Drop a Macro here{{/if}}
+      </span>
+      <button type="button" class="fmc-clear-btn" title="Remove macro"
+        style="{{#unless macroName}}display:none{{/unless}}">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+  {{/each}}
+
+</div>
