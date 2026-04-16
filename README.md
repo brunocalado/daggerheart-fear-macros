@@ -1,8 +1,8 @@
-# Daggerheart: Fear Macros
+# Daggerheart: Resource Macros
 
-A Foundry VTT module designed for the **Daggerheart** system. The primary goal of this module is to trigger specific macros whenever the global Fear resource changes.
+A Foundry VTT module designed for the **Daggerheart** system. It automatically triggers macros whenever the global **Fear** resource or a player character's **Hope** resource changes.
 
-This allows Game Masters to automate events, send chat messages, or trigger visual effects (via macros) exactly when the Fear count goes up, down, hits zero, or reaches the configured maximum.
+This allows Game Masters to automate events, send chat messages, or trigger visual effects exactly when Fear goes up, Hope runs out, or any other threshold is crossed.
 
 A simple example of a chat message displayed when Fear changes:
 <p align="center">
@@ -11,20 +11,18 @@ A simple example of a chat message displayed when Fear changes:
 
 ## ✨ Features
 
-- **Automated Triggers:** Detects changes in the global Daggerheart Fear resource.
+- **Fear Triggers:** Detects changes in the global Daggerheart Fear resource.
+- **Hope Triggers:** Detects changes in Hope for every player-owned character.
 - **Dynamic Limits:** Automatically respects the maximum Fear value configured in the system settings (no longer fixed at 12).
-- **Configurable Macros:** Assign different macros for:
-  - Fear Increase
-  - Fear Decrease
-  - Fear Max (System Limit)
-  - Fear Min (0)
+- **Configurable Macros:** Assign different macros for each trigger event (see below).
+- **`Resource.Message()` API:** A simple function you can call inside any macro to send a styled Daggerheart chat card, with optional text, background image, and sound.
 
 ## 🚀 Getting Started
 
-This module includes a **Compendium Pack** named `Daggerheart: Fear Macros` containing basic examples.
+This module includes a **Compendium Pack** named `Resource Macros` containing basic examples.
 
 1. Go to the **Compendium Packs** tab in Foundry VTT.
-2. Locate **Daggerheart: Fear Macros**.
+2. Locate **Resource Macros**.
 3. Import the macros into your world.
 4. The module settings are pre-configured to use these default names.
 
@@ -34,26 +32,48 @@ This module includes a **Compendium Pack** named `Daggerheart: Fear Macros` cont
 
 ## ⚙️ Configuration
 
-Go to the **Module Settings** tab in Foundry VTT to configure the behavior:
+Go to the **Module Settings** tab in Foundry VTT to configure the behavior.
 
-| Setting / Trigger | Description |
+### Fear Triggers
+
+| Trigger | Description |
 | :--- | :--- |
 | **Macro: Increase Fear** | Runs when Fear goes UP (but has not yet reached the maximum). |
 | **Macro: Decrease Fear** | Runs when Fear goes DOWN (but has not yet reached 0). |
 | **Macro: Fear Max** | Runs when Fear reaches the **maximum value defined in system settings**. |
 | **Macro: Fear Min** | Runs when Fear reaches exactly **0**. |
 
-> **Note:** The module executes triggers ONLY on the GM's client to prevent duplicate effects.
+### Hope Triggers
+
+| Trigger | Description |
+| :--- | :--- |
+| **Macro: Increase Hope** | Runs when a player character's Hope goes UP (but has not yet reached the maximum). |
+| **Macro: Decrease Hope** | Runs when a player character's Hope goes DOWN (but has not yet reached 0). |
+| **Macro: Hope Max** | Runs when Hope reaches the character's maximum value. |
+| **Macro: Hope Zero** | Runs when Hope reaches exactly **0**. |
+
+> **Note:** All triggers execute only on the GM's client to prevent duplicate effects. Hope macros receive the `actor` variable in scope, so you can reference the character who triggered the change inside the macro script.
 
 <p align="center">
   <img width="800" src="docs/settings.webp" alt="Settings Example">
 </p>
 
+## 💬 Resource.Message() — Chat Card API
+
+The module exposes a function called `Resource.Message()` that you can use inside any macro to send a styled Daggerheart chat card to all players.
+
+Full documentation is available on the [Wiki](https://github.com/brunocalado/daggerheart-fear-macros/wiki/Resource.Message()-%E2%80%94-Chat-Card-API).
+
+**Header only** — a minimal announcement:
+```js
+Resource.Message({ header: "-1 Fear" });
+```
+
 ## 🔧 Manual Installation
 
 To install this module manually, use the following manifest URL in the "Install Module" dialog within Foundry VTT:
 
-```js
+```
 https://raw.githubusercontent.com/brunocalado/daggerheart-fear-macros/main/module.json
 ```
 
@@ -79,7 +99,7 @@ This module is an independent project and is not affiliated with the official Da
 | ☠️ [**Death Moves**](https://github.com/brunocalado/daggerheart-death-moves) | Enhances the Death Move moment with a dramatic interface and full automation. |
 | 📏 [**Distances**](https://github.com/brunocalado/daggerheart-distances) | Visualizes combat ranges with customizable rings and hover calculations. |
 | 📦 [**Extra Content**](https://github.com/brunocalado/daggerheart-extra-content) | Homebrew for Daggerheart. |
-| 🤖 [**Fear Macros**](https://github.com/brunocalado/daggerheart-fear-macros) | Automatically executes macros when the Fear resource is changed. |
+| 🤖 [**Resource Macros**](https://github.com/brunocalado/daggerheart-fear-macros) | Automatically executes macros when the Fear or Hope resource changes. |
 | 😱 [**Fear Tracker**](https://github.com/brunocalado/daggerheart-fear-tracker) | Adds an animated slider bar with configurable fear tokens to the UI. |
 | 🧟 [**Horde**](https://github.com/brunocalado/dh-horde) | Explode single horde tokens into dozens of individual tokens and manage their movement and stats automatically. |
 | 🎁 [**Mystery Box**](https://github.com/brunocalado/dh-mystery-box) | Introduces mystery box mechanics for random loot and surprises. |
