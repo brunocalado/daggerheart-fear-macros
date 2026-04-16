@@ -19,6 +19,14 @@ let previousFear = null;
 const previousHopeMap = new Map();
 
 /**
+ * Transient actor context set by triggerMacro() before executing a Hope macro.
+ * buildResourceMessage() consumes this as an automatic fallback so macros do not
+ * need to pass `actor` explicitly. Cleared in a finally block after execution.
+ * @type {Actor|null}
+ */
+let _macroActorContext = null;
+
+/**
  * Helper to retrieve the dynamic Max Fear value from Daggerheart system settings.
  * Defaults to 12 if not found.
  * @returns {number}
@@ -560,31 +568,37 @@ function handleHopeChange(actor, newHope, previous) {
     // actor.toObject() and actor.data are strictly off-limits — they bypass Active Effects.
     const maxHope = Number(actor.system?.resources?.hope?.max) || 0;
 
+    // actor is passed as scope so macros can use it as a local variable
+    // and pass it to Resource.Message() to derive the correct chat speaker.
+    const scope = { actor };
+
     // Priority 1: Reached maximum
     if (maxHope > 0 && newHope >= maxHope) {
-        triggerMacro('hopeMax');
+        triggerMacro('hopeMax', scope);
     }
     // Priority 2: Reached zero
     else if (newHope <= 0) {
-        triggerMacro('hopeZero');
+        triggerMacro('hopeZero', scope);
     }
     // Priority 3: Standard increase
     else if (newHope > previous) {
-        triggerMacro('hopeIncrease');
+        triggerMacro('hopeIncrease', scope);
     }
     // Priority 4: Standard decrease
     else if (newHope < previous) {
-        triggerMacro('hopeDecrease');
+        triggerMacro('hopeDecrease', scope);
     }
 }
 
 /**
  * Resolve the stored macro UUID and execute it.
  * fromUuid works for both world macros and compendium macros in v13.
- * @param {string} settingKey - One of the four macroIncrease/Decrease/MaxFear/ZeroFear keys
+ * @param {string} settingKey - One of the macro setting keys (e.g. macroIncrease, hopeMax)
+ * @param {object} [scope={}]  - Optional scope injected into the macro's execution context.
+ *                               Pass { actor } for Hope macros so the script can use actor as a local variable.
  * @returns {Promise<void>}
  */
-async function triggerMacro(settingKey) {
+async function triggerMacro(settingKey, scope = {}) {
     const uuid = game.settings.get(MODULE_ID, settingKey);
     if (!uuid) return;
 
@@ -597,9 +611,15 @@ async function triggerMacro(settingKey) {
     }
 
     try {
-        await macro.execute();
+        // Expose actor context so buildResourceMessage() can derive the correct
+        // speaker and author automatically, even if the macro script does not
+        // pass actor to Resource.Message() explicitly.
+        _macroActorContext = scope.actor || null;
+        await macro.execute(scope);
     } catch (err) {
         console.error(`${MODULE_ID} | Macro execution error:`, err);
+    } finally {
+        _macroActorContext = null;
     }
 }
 
@@ -614,9 +634,13 @@ async function triggerMacro(settingKey) {
  * @param {string}  [options.image]         - Optional. Background image path for the body. Only used when text is provided.
  * @param {string}  [options.sound]         - Optional. Path to audio file to broadcast to all clients.
  * @param {number}  [options.volume=0.8]    - Optional. Playback volume (0.0–1.0). Defaults to 0.8.
+ * @param {Actor|null} [options.actor=null] - Optional. When provided, derives the chat speaker from this actor
+ *                                           via ChatMessage.getSpeaker(), showing the character name and active token.
+ *                                           Hope macros receive this automatically via macro.execute(scope).
+ *                                           Omit for Fear messages (speaker falls back to { alias: header }).
  * @returns {Promise<void>}
  */
-async function buildResourceMessage({ header, text, image, sound, volume = 0.8 } = {}) {
+async function buildResourceMessage({ header, text, image, sound, volume = 0.8, actor = null } = {}) {
     if (!header) {
         console.warn(`${MODULE_ID} | Resource.Message() called without a required "header" parameter.`);
         return;
@@ -656,11 +680,31 @@ async function buildResourceMessage({ header, text, image, sound, volume = 0.8 }
 </div>`;
     }
 
-    // Send to chat — speaker alias matches the header for context
-    await ChatMessage.create({
-        content,
-        speaker: { alias: header }
-    });
+    // Resolve actor: explicit param takes priority, then the transient context
+    // injected by triggerMacro() for Hope macros. Fear macros have neither.
+    const effectiveActor = actor || _macroActorContext;
+
+    // Hope messages derive the speaker from the actor (shows character name + active token).
+    // Fear messages fall back to the header alias since they have no associated actor.
+    const speaker = effectiveActor
+        ? ChatMessage.getSpeaker({ actor: effectiveActor })
+        : { alias: header };
+
+    const messageData = { content, speaker };
+
+    // getSpeaker() only controls the visual display (name/avatar in the chat card).
+    // The `author` field determines the actual message author shown in the chat log —
+    // it defaults to game.user.id (the GM, who executes the macro on the server side).
+    // We override it to the actor's player owner so Hope messages appear under their name.
+    // Note: V13 uses `author` (not the deprecated `user` field).
+    if (effectiveActor) {
+        const owner = game.users.find(
+            u => !u.isGM && effectiveActor.testUserPermission(u, "OWNER")
+        );
+        if (owner) messageData.author = owner.id;
+    }
+
+    await ChatMessage.create(messageData);
 
     // Play sound broadcast to all connected clients — independent of card rendering mode
     if (sound) {
