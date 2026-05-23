@@ -73,7 +73,7 @@ Resource.Message({ header: "-1 Fear" });
 
 To install this module manually, use the following manifest URL in the "Install Module" dialog within Foundry VTT:
 
-```
+```js
 https://raw.githubusercontent.com/brunocalado/daggerheart-fear-macros/main/module.json
 ```
 

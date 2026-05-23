@@ -1,4 +1,11 @@
+# 1.3.0
+
+- v14 only
+- [Changed] Split monolithic `scripts/main.js` into focused ESM modules: `constants.js`, `fear.js`, `hope.js`, `fear-macro-config.js`, `hope-macro-config.js`, `helpers.js`
+- [Changed] `MODULE_ID` now lives in `scripts/constants.js` and is imported where needed, per project conventions
+
 # 1.2.0
+
 - [Added] Hope Macro Configuration: assign macros to Hope trigger events on player-owned actors
 - [Added] Per-actor hope cache (previousHopeMap) initialized on ready
 - [Added] updateActor hook to detect hope value changes on non-GM player actors
@@ -6,6 +13,7 @@
 - [Added] `Resource.Message()` public API — sends styled Daggerheart chat cards with optional text, image background, and broadcast sound from any macro
 
 # 1.1.0
+
 - [Changed] Extracted template CSS into styles/macro-config.css
 - [Changed] Redesigned Fear Macro Configuration dialog for clarity: drop zones now have icon, separator rows, and drag-invalid feedback
 - [Changed] Macro settings now use drag-and-drop UUID assignment via a dedicated ApplicationV2 dialog ("Configure Macros" button in Module Settings), replacing the four plain text-input fields.
