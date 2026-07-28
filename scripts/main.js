@@ -1,14 +1,18 @@
 /**
  * Daggerheart: Fear Macros
  * Author: Mestre Digital
- * Description: Triggers macros based on Daggerheart Fear and Hope resource changes.
+ * Description: Triggers macros based on Daggerheart Fear, Hope, Stress and HP resource changes.
  */
 
 import { MODULE_ID } from './constants.js';
 import { FearMacroConfig } from './fear-macro-config.js';
 import { HopeMacroConfig } from './hope-macro-config.js';
+import { StressMacroConfig } from './stress-macro-config.js';
+import { HpMacroConfig } from './hp-macro-config.js';
 import { initializeFearCache } from './fear.js';
 import { initializeHopeCache } from './hope.js';
+import { initializeStressCache } from './stress.js';
+import { initializeHpCache } from './hp.js';
 import { buildResourceMessage } from './helpers.js';
 
 Hooks.once('init', () => {
@@ -48,6 +52,42 @@ Hooks.once('init', () => {
         scope: "world", config: false, type: String, default: ""
     });
 
+    // --- STRESS MACRO SETTINGS (UUID storage, hidden from default settings UI) ---
+
+    game.settings.register(MODULE_ID, 'stressIncrease', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
+    game.settings.register(MODULE_ID, 'stressDecrease', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
+    game.settings.register(MODULE_ID, 'stressMax', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
+    game.settings.register(MODULE_ID, 'stressZero', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
+    // --- HP MACRO SETTINGS (UUID storage, hidden from default settings UI) ---
+
+    game.settings.register(MODULE_ID, 'hpIncrease', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
+    game.settings.register(MODULE_ID, 'hpDecrease', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
+    game.settings.register(MODULE_ID, 'hpMax', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
+    game.settings.register(MODULE_ID, 'hpZero', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
     // Button in Module Settings that opens the drag-drop configuration dialog
     game.settings.registerMenu(MODULE_ID, 'macroConfigMenu', {
         name: "Configure Fear Macros",
@@ -67,15 +107,37 @@ Hooks.once('init', () => {
         restricted: true
     });
 
+    game.settings.registerMenu(MODULE_ID, 'stressConfigMenu', {
+        name: "Configure Stress Macros",
+        label: "Configure Stress Macros",
+        hint: "Assign macros to each Stress trigger event (non-GM player actors only).",
+        icon: "fas fa-heart-crack",
+        type: StressMacroConfig,
+        restricted: true
+    });
+
+    game.settings.registerMenu(MODULE_ID, 'hpConfigMenu', {
+        name: "Configure HP Macros",
+        label: "Configure HP Macros",
+        hint: "Assign macros to each HP trigger event (non-GM player actors only).",
+        icon: "fas fa-heart-pulse",
+        type: HpMacroConfig,
+        restricted: true
+    });
+
     foundry.applications.handlebars.loadTemplates([
         `modules/${MODULE_ID}/templates/macro-config.hbs`,
-        `modules/${MODULE_ID}/templates/hope-macro-config.hbs`
+        `modules/${MODULE_ID}/templates/hope-macro-config.hbs`,
+        `modules/${MODULE_ID}/templates/stress-macro-config.hbs`,
+        `modules/${MODULE_ID}/templates/hp-macro-config.hbs`
     ]);
 });
 
 Hooks.once('ready', async () => {
     initializeFearCache();
     initializeHopeCache();
+    initializeStressCache();
+    initializeHpCache();
 
     // --- Migration: string macro name → UUID ---
     // Earlier versions stored the macro's display name; now we store UUIDs.

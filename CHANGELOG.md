@@ -1,3 +1,12 @@
+# 1.3.1
+
+- [Added] Stress Macro Configuration: assign macros to Stress trigger events on player-owned actors
+- [Added] HP Macro Configuration: assign macros to HP trigger events on player-owned actors
+- [Added] Per-actor stress cache (previousStressMap) and HP cache (previousHpMap), both initialized on ready
+- [Added] updateActor hooks to detect stress and HP value changes on non-GM player actors
+- [Added] templates/stress-macro-config.hbs and templates/hp-macro-config.hbs
+- [Fixed] Instructions box in the macro configuration dialogs was only styled for the Fear dialog; now applies to Fear, Hope, Stress, and HP dialogs alike
+
 # 1.3.0
 
 - v14 only
