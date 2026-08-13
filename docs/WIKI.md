@@ -1,3 +1,38 @@
+# Macro Scope Variables
+
+Every trigger macro (Fear, Hope, Stress, HP, and Armor) runs with extra local variables injected
+into its execution scope, on top of whatever the macro's own code declares. You do not need to
+declare or import them — just reference the names directly in the macro body.
+
+| Variable | Type | Available on | Description |
+|---|---|---|---|
+| `actor` | `Actor` | Hope, Stress, HP, Armor | The character whose resource changed. For Armor, this is the owner of the equipped armor item. Not present for Fear (a world-level resource with no single actor). |
+| `newValue` | `number` | All | The resource's value after the change. |
+| `previousValue` | `number` | All | The resource's value before the change. |
+| `delta` | `number` | All | `newValue - previousValue`. Negative when the resource went down. |
+| `max` | `number` | All | The resource's current maximum (Fear's dynamic system max, or the character's/item's max). |
+
+This is what solves the "I marked 2 Hope at once but the chat message still says +1" problem —
+build the message text from `delta`/`newValue` instead of hardcoding it:
+
+```js
+// Example: macro assigned to "Increase Hope"
+Resource.Message({
+    header: `+${delta} Hope`,
+    text: `Hope is now ${newValue} of ${max}.`,
+    actor
+});
+```
+
+```js
+// Example: macro assigned to "Armor Increase" — marks were just added to the equipped armor
+Resource.Message({
+    header: `Armor marked (+${delta})`,
+    text: `${actor.name}'s armor now has ${newValue} of ${max} slots marked.`,
+    actor
+});
+```
+
 # Resource.Message() — Chat Card API
 
 `Resource.Message()` is a public JavaScript API exposed by the **Daggerheart: Resource Macros** module. It allows any macro (world or compendium) to send a styled Daggerheart chat card to all connected clients and optionally broadcast a sound.

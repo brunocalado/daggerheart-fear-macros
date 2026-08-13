@@ -1,35 +1,39 @@
+/*!
+ * Daggerheart: Resource Macros
+ * Copyright (c) 2025 https://github.com/brunocalado
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3.
+ */
+
 import { MODULE_ID } from './constants.js';
 import { findDefaultMacroUuid } from './helpers.js';
 
 /**
- * ApplicationV2 dialog for assigning macros (by UUID) to each Fear trigger slot.
- * Opened via the Module Settings "Configure Fear Macros" button.
+ * ApplicationV2 dialog for assigning macros (by UUID) to each Armor trigger slot.
+ * Opened via the Module Settings "Configure Armor Macros" button.
  */
-export class FearMacroConfig extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.api.ApplicationV2) {
-    /**
-     * Maps each setting key to the bundled compendium macro that "Get Default Macros" assigns.
-     * Fear ships two macro sets (plain and flavor-text) sharing the same names, so the folder
-     * disambiguates which one is the default — the plain "Simple" set, matching the other resources.
-     */
+export class ArmorMacroConfig extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.api.ApplicationV2) {
+    /** Maps each setting key to the bundled compendium macro that "Get Default Macros" assigns. */
     static DEFAULT_MACROS = [
-        { key: "macroIncrease", name: "Increase Fear", folder: "Fear Chat Message - Simple" },
-        { key: "macroDecrease", name: "Decrease Fear", folder: "Fear Chat Message - Simple" },
-        { key: "macroMaxFear",  name: "Fear Max",      folder: "Fear Chat Message - Simple" },
-        { key: "macroZeroFear", name: "Fear Min",      folder: "Fear Chat Message - Simple" }
+        { key: "armorIncrease", name: "Increase Armor" },
+        { key: "armorDecrease", name: "Decrease Armor" },
+        { key: "armorMax",      name: "Armor Max" },
+        { key: "armorZero",     name: "Armor Min" }
     ];
 
     static DEFAULT_OPTIONS = {
-        id: "fear-macro-config",
+        id: "armor-macro-config",
         tag: "div",
         window: {
-            title: "Daggerheart: Fear Macro Configuration",
+            title: "Daggerheart: Armor Macro Configuration",
             resizable: false
         },
         position: { width: 480 }
     };
 
     static PARTS = {
-        form: { template: `modules/${MODULE_ID}/templates/macro-config.hbs` }
+        form: { template: `modules/${MODULE_ID}/templates/armor-macro-config.hbs` }
     };
 
     /**
@@ -41,16 +45,15 @@ export class FearMacroConfig extends foundry.applications.api.HandlebarsApplicat
      */
     async _prepareContext(options) {
         const slots = [
-            { key: "macroIncrease",  label: "Increase Fear",          hint: "Triggered when Fear increases (not at Max)." },
-            { key: "macroDecrease",  label: "Decrease Fear",          hint: "Triggered when Fear decreases (not 0)." },
-            { key: "macroMaxFear",   label: "Fear Max (System Limit)", hint: "Triggered instead of Increase when Fear hits Max." },
-            { key: "macroZeroFear",  label: "Fear Min (0)",            hint: "Triggered instead of Decrease when Fear reaches 0." }
+            { key: "armorIncrease", label: "Increase Armor", hint: "Triggered when a player actor's equipped Armor is marked (not at Max)." },
+            { key: "armorDecrease", label: "Decrease Armor", hint: "Triggered when a player actor's equipped Armor marks are cleared (not 0)." },
+            { key: "armorMax",      label: "Armor Max",      hint: "Triggered instead of Increase when all Armor slots are marked." },
+            { key: "armorZero",     label: "Armor Zero (0)", hint: "Triggered instead of Decrease when Armor has no marks left." }
         ];
 
         for (const slot of slots) {
             const uuid = game.settings.get(MODULE_ID, slot.key);
             if (uuid) {
-                // fromUuid resolves both world and compendium documents
                 const doc = await fromUuid(uuid).catch(() => null);
                 slot.macroName = doc?.name ?? null;
                 slot.macroUuid = uuid;
@@ -66,8 +69,8 @@ export class FearMacroConfig extends foundry.applications.api.HandlebarsApplicat
     /**
      * Wire drag-drop and clear-button listeners after each render.
      * AppV2 lifecycle: replaces activateListeners from the old Application API.
-     * @param {object} context - Rendered template context
-     * @param {object} options - Render options
+     * @param {object} context
+     * @param {object} options
      */
     _onRender(context, options) {
         const html = this.element;
@@ -139,8 +142,7 @@ export class FearMacroConfig extends foundry.applications.api.HandlebarsApplicat
     }
 
     /**
-     * Persist dropped Macro UUID to settings and update the slot display inline,
-     * avoiding a full re-render for a snappier UX.
+     * Persist dropped Macro UUID to settings and update the slot display inline.
      * @param {DragEvent} event
      */
     async _onDrop(event) {
@@ -160,7 +162,6 @@ export class FearMacroConfig extends foundry.applications.api.HandlebarsApplicat
             return;
         }
 
-        // fromUuid handles both world macros (Macro.<id>) and compendium UUIDs
         const doc = await fromUuid(data.uuid).catch(() => null);
         if (!doc || doc.documentName !== 'Macro') {
             ui.notifications.warn("Could not resolve the dropped document as a Macro.");
@@ -170,7 +171,6 @@ export class FearMacroConfig extends foundry.applications.api.HandlebarsApplicat
         const settingKey = slot.dataset.key;
         await game.settings.set(MODULE_ID, settingKey, data.uuid);
 
-        // Update display without a full re-render
         const nameEl = slot.querySelector('.fmc-macro-name');
         nameEl.textContent = doc.name;
         nameEl.classList.remove('is-empty');

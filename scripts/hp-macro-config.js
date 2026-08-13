@@ -7,12 +7,21 @@
  */
 
 import { MODULE_ID } from './constants.js';
+import { findDefaultMacroUuid } from './helpers.js';
 
 /**
  * ApplicationV2 dialog for assigning macros (by UUID) to each HP trigger slot.
  * Opened via the Module Settings "Configure HP Macros" button.
  */
 export class HpMacroConfig extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.api.ApplicationV2) {
+    /** Maps each setting key to the bundled compendium macro that "Get Default Macros" assigns. */
+    static DEFAULT_MACROS = [
+        { key: "hpIncrease", name: "Increase HP" },
+        { key: "hpDecrease", name: "Decrease HP" },
+        { key: "hpMax",      name: "HP Max" },
+        { key: "hpZero",     name: "HP Min" }
+    ];
+
     static DEFAULT_OPTIONS = {
         id: "hp-macro-config",
         tag: "div",
@@ -75,6 +84,33 @@ export class HpMacroConfig extends foundry.applications.api.HandlebarsApplicatio
         html.querySelectorAll('.fmc-clear-btn').forEach(btn => {
             btn.addEventListener('click', this._onClear.bind(this));
         });
+
+        html.querySelector('.fmc-get-defaults-btn')?.addEventListener('click', this._onGetDefaults.bind(this));
+    }
+
+    /**
+     * Assign the bundled compendium example macro to every slot, in one click,
+     * instead of requiring the GM to drag each one manually.
+     * @param {MouseEvent} event
+     */
+    async _onGetDefaults(event) {
+        event.preventDefault();
+
+        let missing = 0;
+        for (const { key, name, folder } of this.constructor.DEFAULT_MACROS) {
+            const uuid = await findDefaultMacroUuid(name, folder);
+            if (uuid) {
+                await game.settings.set(MODULE_ID, key, uuid);
+            } else {
+                missing++;
+            }
+        }
+
+        if (missing > 0) {
+            ui.notifications.warn(`${MODULE_ID} | Could not find ${missing} default macro(s) — is the "Resource Macros" compendium still present?`);
+        }
+
+        this.render();
     }
 
     /**

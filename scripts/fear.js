@@ -47,21 +47,26 @@ function handleFearChange(newFear) {
 
     const maxFear = getMaxFear();
 
+    // newValue/previousValue/delta let the macro report the real amount changed,
+    // instead of a static "+1"/"-1" that's wrong for multi-point edits.
+    // previousFear is still the pre-change value here — the hook reassigns it only after this returns.
+    const scope = { newValue: newFear, previousValue: previousFear, delta: newFear - previousFear, max: maxFear };
+
     // Priority 1: Max value (dynamic from system settings)
     if (newFear >= maxFear) {
-        triggerMacro('macroMaxFear');
+        triggerMacro('macroMaxFear', scope);
     }
     // Priority 2: Min value (0)
     else if (newFear <= 0) {
-        triggerMacro('macroZeroFear');
+        triggerMacro('macroZeroFear', scope);
     }
     // Priority 3: Standard increase
     else if (newFear > previousFear) {
-        triggerMacro('macroIncrease');
+        triggerMacro('macroIncrease', scope);
     }
     // Priority 4: Standard decrease
     else if (newFear < previousFear) {
-        triggerMacro('macroDecrease');
+        triggerMacro('macroDecrease', scope);
     }
 }
 

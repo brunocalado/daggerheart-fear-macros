@@ -3,18 +3,23 @@
    Loaded via module.json "styles" array.
    ============================================================ */
 
-.fear-macro-config-app {
+.fear-macro-config-app,
+.hope-macro-config-app,
+.stress-macro-config-app,
+.hp-macro-config-app,
+.armor-macro-config-app {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 /* Top-level instruction text */
 .fear-macro-config-app .fmc-instructions,
 .hope-macro-config-app .fmc-instructions,
 .stress-macro-config-app .fmc-instructions,
-.hp-macro-config-app .fmc-instructions {
+.hp-macro-config-app .fmc-instructions,
+.armor-macro-config-app .fmc-instructions {
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -30,23 +35,67 @@
 .fear-macro-config-app .fmc-instructions i,
 .hope-macro-config-app .fmc-instructions i,
 .stress-macro-config-app .fmc-instructions i,
-.hp-macro-config-app .fmc-instructions i {
+.hp-macro-config-app .fmc-instructions i,
+.armor-macro-config-app .fmc-instructions i {
   margin-top: 2px;
   flex-shrink: 0;
   color: var(--color-warm-1, #b8860b);
 }
 
-/* Each trigger row: label block + drop zone */
+/* ============================================================
+   "Get Default Macros" — bulk-assigns the bundled compendium
+   examples to every slot. Sits in its own toolbar row, visually
+   anchored between the instructions banner and the slot list
+   rather than floating loose.
+   ============================================================ */
+
+.fmc-toolbar {
+  display: flex;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border, #444);
+}
+
+.fmc-get-defaults-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--color-warm-1, #b8860b);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--color-warm-1, #b8860b) 12%, transparent);
+  color: var(--color-warm-1, #b8860b);
+  font-size: 0.9em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.fmc-get-defaults-btn:hover {
+  background: var(--color-warm-1, #b8860b);
+  color: var(--color-text-dark-primary, #111);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-warm-1, #b8860b) 25%, transparent);
+}
+
+.fmc-get-defaults-btn:active {
+  transform: translateY(1px);
+}
+
+/* ============================================================
+   Trigger rows — each slot is a distinct card, so the four
+   triggers read as separate fields instead of one blurred list.
+   ============================================================ */
+
 .fmc-row {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-/* Separator between rows except the last */
-.fmc-row + .fmc-row {
-  padding-top: 12px;
-  border-top: 1px solid var(--color-border, #444);
+  gap: 10px;
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--color-text-primary, #fff) 4%, transparent);
+  border: 1px solid var(--color-border, #444);
+  border-radius: 8px;
 }
 
 /* Label block */
@@ -54,6 +103,8 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border, #444) 60%, transparent);
 }
 
 .fmc-label strong {
@@ -70,7 +121,9 @@
 }
 
 /* ============================================================
-   Drop Zone — the primary visual affordance of the feature
+   Drop Zone — the primary visual affordance of the feature.
+   Three distinct states: idle, hover (about to drag/drop), and
+   actively dragging a valid/invalid Macro over it.
    ============================================================ */
 
 .fmc-drop-zone {
@@ -86,6 +139,16 @@
   background: color-mix(in srgb, var(--color-text-primary, #fff) 3%, transparent);
   transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
   cursor: default;
+}
+
+/* Mouse hover — invites the drag, distinct from the active drag-over state below */
+.fmc-drop-zone:hover {
+  border-color: var(--color-warm-1, #b8860b);
+  background: color-mix(in srgb, var(--color-warm-1, #b8860b) 6%, transparent);
+}
+
+.fmc-drop-zone:hover .fmc-drop-icon {
+  color: var(--color-warm-1, #b8860b);
 }
 
 /* Placeholder icon — only visible when slot is empty */
@@ -112,11 +175,12 @@
   font-style: italic;
 }
 
-/* Active drag-over state — clear highlight so user knows the zone accepts the drop */
+/* Active drag-over state — stronger highlight than :hover so the user knows the zone accepts the drop */
 .fmc-drop-zone.drag-over {
+  border-style: solid;
   border-color: var(--color-border-highlight, #7eb);
-  background: color-mix(in srgb, var(--color-border-highlight, #7eb) 10%, transparent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-border-highlight, #7eb) 20%, transparent);
+  background: color-mix(in srgb, var(--color-border-highlight, #7eb) 12%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-border-highlight, #7eb) 25%, transparent);
 }
 
 .fmc-drop-zone.drag-over .fmc-drop-icon {
@@ -125,8 +189,10 @@
 
 /* Invalid drop feedback */
 .fmc-drop-zone.drag-invalid {
+  border-style: solid;
   border-color: var(--color-level-error, #c44);
-  background: color-mix(in srgb, var(--color-level-error, #c44) 8%, transparent);
+  background: color-mix(in srgb, var(--color-level-error, #c44) 10%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-level-error, #c44) 20%, transparent);
 }
 
 /* Clear button */

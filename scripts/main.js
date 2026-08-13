@@ -1,7 +1,7 @@
 /**
  * Daggerheart: Fear Macros
  * Author: Mestre Digital
- * Description: Triggers macros based on Daggerheart Fear, Hope, Stress and HP resource changes.
+ * Description: Triggers macros based on Daggerheart Fear, Hope, Stress, HP and Armor resource changes.
  */
 
 import { MODULE_ID } from './constants.js';
@@ -9,10 +9,12 @@ import { FearMacroConfig } from './fear-macro-config.js';
 import { HopeMacroConfig } from './hope-macro-config.js';
 import { StressMacroConfig } from './stress-macro-config.js';
 import { HpMacroConfig } from './hp-macro-config.js';
+import { ArmorMacroConfig } from './armor-macro-config.js';
 import { initializeFearCache } from './fear.js';
 import { initializeHopeCache } from './hope.js';
 import { initializeStressCache } from './stress.js';
 import { initializeHpCache } from './hp.js';
+import { initializeArmorCache } from './armor.js';
 import { buildResourceMessage } from './helpers.js';
 
 Hooks.once('init', () => {
@@ -88,6 +90,24 @@ Hooks.once('init', () => {
         scope: "world", config: false, type: String, default: ""
     });
 
+    // --- ARMOR MACRO SETTINGS (UUID storage, hidden from default settings UI) ---
+
+    game.settings.register(MODULE_ID, 'armorIncrease', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
+    game.settings.register(MODULE_ID, 'armorDecrease', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
+    game.settings.register(MODULE_ID, 'armorMax', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
+    game.settings.register(MODULE_ID, 'armorZero', {
+        scope: "world", config: false, type: String, default: ""
+    });
+
     // Button in Module Settings that opens the drag-drop configuration dialog
     game.settings.registerMenu(MODULE_ID, 'macroConfigMenu', {
         name: "Configure Fear Macros",
@@ -125,11 +145,21 @@ Hooks.once('init', () => {
         restricted: true
     });
 
+    game.settings.registerMenu(MODULE_ID, 'armorConfigMenu', {
+        name: "Configure Armor Macros",
+        label: "Configure Armor Macros",
+        hint: "Assign macros to each Armor trigger event (non-GM player actors' equipped armor only).",
+        icon: "fas fa-shield-halved",
+        type: ArmorMacroConfig,
+        restricted: true
+    });
+
     foundry.applications.handlebars.loadTemplates([
         `modules/${MODULE_ID}/templates/macro-config.hbs`,
         `modules/${MODULE_ID}/templates/hope-macro-config.hbs`,
         `modules/${MODULE_ID}/templates/stress-macro-config.hbs`,
-        `modules/${MODULE_ID}/templates/hp-macro-config.hbs`
+        `modules/${MODULE_ID}/templates/hp-macro-config.hbs`,
+        `modules/${MODULE_ID}/templates/armor-macro-config.hbs`
     ]);
 });
 
@@ -138,6 +168,7 @@ Hooks.once('ready', async () => {
     initializeHopeCache();
     initializeStressCache();
     initializeHpCache();
+    initializeArmorCache();
 
     // --- Migration: string macro name → UUID ---
     // Earlier versions stored the macro's display name; now we store UUIDs.

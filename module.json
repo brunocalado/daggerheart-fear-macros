@@ -1,7 +1,7 @@
 {
   "id": "daggerheart-fear-macros",
   "title": "Daggerheart: Resource Macros",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "compatibility": {
     "minimum": "14",
     "verified": "14",
@@ -38,7 +38,7 @@
       "system": "daggerheart"
     }
   ],
-  "description": "Automatically executes macros when the Daggerheart system Fear, Hope, Stress, or HP resource is changed.",
+  "description": "Automatically executes macros when the Daggerheart system Fear, Hope, Stress, HP, or Armor resource is changed.",
   "esmodules": [
     "scripts/main.js"
   ],

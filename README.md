@@ -1,6 +1,6 @@
 # Daggerheart: Resource Macros
 
-A Foundry VTT module designed for the **Daggerheart** system. It automatically triggers macros whenever the global **Fear** resource or a player character's **Hope**, **Stress**, or **HP** resource changes.
+A Foundry VTT module designed for the **Daggerheart** system. It automatically triggers macros whenever the global **Fear** resource or a player character's **Hope**, **Stress**, **HP**, or equipped **Armor** resource changes.
 
 This allows Game Masters to automate events, send chat messages, or trigger visual effects exactly when Fear goes up, Hope runs out, or any other threshold is crossed.
 
@@ -18,6 +18,7 @@ A simple example of a chat message displayed when Fear changes:
 - **Hope Triggers:** Detects changes in Hope for every player-owned character.
 - **Stress Triggers:** Detects changes in Stress for every player-owned character.
 - **HP Triggers:** Detects changes in HP for every player-owned character.
+- **Armor Triggers:** Detects changes in the equipped Armor's marks for every player-owned character.
 - **Dynamic Limits:** Automatically respects the maximum Fear value configured in the system settings (no longer fixed at 12).
 - **Configurable Macros:** Assign different macros for each trigger event (see below).
 - **`Resource.Message()` API:** A simple function you can call inside any macro to send a styled Daggerheart chat card, with optional text, background image, and sound.
@@ -26,10 +27,9 @@ A simple example of a chat message displayed when Fear changes:
 
 This module includes a **Compendium Pack** named `Resource Macros` containing basic examples.
 
-1. Go to the **Compendium Packs** tab in Foundry VTT.
-2. Locate **Resource Macros**.
-3. Import the macros into your world.
-4. The module settings are pre-configured to use these default names.
+1. Import the macros from the **Resource Macros** compendium into your world (or leave them in the compendium — macros don't need to be in your world to be assigned).
+2. Open **Module Settings** and click **Configure Fear/Hope/Stress/HP/Armor Macros**.
+3. Click **Get Default Macros** in each dialog to auto-assign the bundled examples to every slot in one click, or drag your own macros into individual slots instead.
 
 <p align="center">
   <img width="400" src="docs/macros.webp" alt="Macros Example">
@@ -37,7 +37,7 @@ This module includes a **Compendium Pack** named `Resource Macros` containing ba
 
 ## ⚙️ Configuration
 
-Go to the **Module Settings** tab in Foundry VTT to configure the behavior.
+Go to the **Module Settings** tab in Foundry VTT to configure the behavior. Every configuration dialog below has a **Get Default Macros** button that assigns the bundled compendium examples to all four slots at once — drag-and-drop is only needed for custom macros.
 
 ### Fear Triggers
 
@@ -75,7 +75,19 @@ Go to the **Module Settings** tab in Foundry VTT to configure the behavior.
 | **Macro: HP Max** | Runs when HP reaches the character's maximum value. |
 | **Macro: HP Zero** | Runs when HP reaches exactly **0** (the death move trigger point). |
 
-> **Note:** All triggers execute only on the GM's client to prevent duplicate effects. Hope, Stress, and HP macros receive the `actor` variable in scope, so you can reference the character who triggered the change inside the macro script.
+### Armor Triggers
+
+Armor marks live on the character's **equipped** Armor item, not on the actor directly — these
+triggers watch that item.
+
+| Trigger | Description |
+| :--- | :--- |
+| **Macro: Increase Armor** | Runs when a player character's equipped Armor is marked (but not all slots are marked). |
+| **Macro: Decrease Armor** | Runs when marks are cleared from the equipped Armor (but not down to 0). |
+| **Macro: Armor Max** | Runs when every Armor slot is marked. |
+| **Macro: Armor Zero** | Runs when the equipped Armor has no marks left. |
+
+> **Note:** All triggers execute only on the GM's client to prevent duplicate effects. Hope, Stress, HP, and Armor macros receive the `actor` variable in scope, so you can reference the character who triggered the change inside the macro script. Every trigger (Fear included) also receives `newValue`, `previousValue`, `delta`, and `max` in scope, so the macro can report the real amount changed — see [docs/WIKI.md](docs/WIKI.md#macro-scope-variables) for details.
 
 <p align="center">
   <img width="600" src="docs/settings.webp" alt="Settings Example">
@@ -127,7 +139,7 @@ This module is an independent project and is not affiliated with the official Da
 | 🎁 **Mystery Box** | Introduces mystery box mechanics for random loot and surprises. |
 | ⚡ **Quick Actions** | Quick access to common mechanics like Falling Damage, Downtime, etc. |
 | 📜 **Quick Rules** | Fast and accessible reference guide for the core rules. |
-| 🤖 **Resource Macros** | Automatically executes macros when the Fear, Hope, Stress, or HP resources change. |
+| 🤖 **Resource Macros** | Automatically executes macros when the Fear, Hope, Stress, HP, or Armor resources change. |
 | 🎲 **Stats** | Tracks dice rolls from GM and Players. |
 | 🧠 **Stats Toolbox** | Import actors using a statblock. |
 | 🛒 **Store** | A dynamic, interactive, and fully configurable in-game store. |

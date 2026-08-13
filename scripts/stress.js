@@ -50,7 +50,9 @@ function handleStressChange(actor, newStress, previous) {
 
     // actor is passed as scope so macros can use it as a local variable
     // and pass it to Resource.Message() to derive the correct chat speaker.
-    const scope = { actor };
+    // newValue/previousValue/delta let the macro report the real amount changed,
+    // instead of a static "+1"/"-1" that's wrong for multi-point edits.
+    const scope = { actor, newValue: newStress, previousValue: previous, delta: newStress - previous, max: maxStress };
 
     // Priority 1: Reached maximum
     if (maxStress > 0 && newStress >= maxStress) {

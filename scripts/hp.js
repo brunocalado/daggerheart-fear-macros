@@ -50,7 +50,9 @@ function handleHpChange(actor, newHp, previous) {
 
     // actor is passed as scope so macros can use it as a local variable
     // and pass it to Resource.Message() to derive the correct chat speaker.
-    const scope = { actor };
+    // newValue/previousValue/delta let the macro report the real amount changed,
+    // instead of a static "+1"/"-1" that's wrong for multi-point edits.
+    const scope = { actor, newValue: newHp, previousValue: previous, delta: newHp - previous, max: maxHp };
 
     // Priority 1: Reached maximum
     if (maxHp > 0 && newHp >= maxHp) {

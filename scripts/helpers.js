@@ -1,6 +1,30 @@
 import { MODULE_ID } from './constants.js';
 
 /**
+ * Resolve the UUID of one of this module's bundled example macros, by name.
+ * Backs each config app's "Get Default Macros" button, which auto-assigns the
+ * compendium's example macros instead of requiring manual drag-and-drop.
+ * @param {string} macroName    - Exact name of the macro document (e.g. "Increase Hope")
+ * @param {string} [folderName] - Disambiguates duplicate names — Fear ships two "Increase Fear"
+ *                                macros (a plain one and a flavor-text one) in different folders.
+ * @returns {Promise<string|null>} A resolvable UUID, or null if no compendium macro matched.
+ */
+export async function findDefaultMacroUuid(macroName, folderName = null) {
+    const pack = game.packs.get(`${MODULE_ID}.daggerheart-fear-macros`);
+    if (!pack) return null;
+
+    const index = await pack.getIndex({ fields: ['folder'] });
+    const candidates = index.filter(e => e.name === macroName);
+    if (candidates.length === 0) return null;
+
+    const entry = folderName
+        ? (candidates.find(e => pack.folders.get(e.folder)?.name === folderName) ?? candidates[0])
+        : candidates[0];
+
+    return `Compendium.${pack.collection}.Macro.${entry._id}`;
+}
+
+/**
  * Transient actor context set by triggerMacro() before executing a Hope macro.
  * buildResourceMessage() consumes this as an automatic fallback so macros do not
  * need to pass `actor` explicitly. Cleared in a finally block after execution.
@@ -13,7 +37,11 @@ let _macroActorContext = null;
  * fromUuid works for both world macros and compendium macros in v14.
  * @param {string} settingKey - One of the macro setting keys (e.g. macroIncrease, hopeMax)
  * @param {object} [scope={}] - Optional scope injected into the macro's execution context.
- *                              Pass { actor } for Hope macros so the script can use actor as a local variable.
+ *                              Fear/Hope/Stress/HP/Armor triggers pass { newValue, previousValue, delta, max }
+ *                              so the macro can report the real amount changed instead of a static string.
+ *                              Hope/Stress/HP/Armor triggers additionally pass { actor } (Armor: the equipped
+ *                              armor item's owning actor) so the script can use it as a local variable and
+ *                              pass it to Resource.Message() to derive the correct chat speaker.
  * @returns {Promise<void>}
  */
 export async function triggerMacro(settingKey, scope = {}) {
