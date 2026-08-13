@@ -1,3 +1,8 @@
+# 1.3.2
+
+- [Removed] AI-generated assets: `assets/images/skull.webp` and the `assets/audio/evil-laugh/` sound set. Neither was referenced by any script, template, or compendium macro.
+- [Changed] `docs/WIKI.md` example snippets updated to reference placeholder asset paths instead of the removed `skull.webp`
+
 # 1.3.1
 
 - [Added] Stress Macro Configuration: assign macros to Stress trigger events on player-owned actors

@@ -85,7 +85,7 @@ Go to the **Module Settings** tab in Foundry VTT to configure the behavior.
 
 The module exposes a function called `Resource.Message()` that you can use inside any macro to send a styled Daggerheart chat card to all players.
 
-Full documentation is available on the [Wiki](https://github.com/brunocalado/daggerheart-fear-macros/wiki/Resource.Message()-%E2%80%94-Chat-Card-API).
+Full documentation is available at [docs/WIKI.md](docs/WIKI.md).
 
 **Header only** — a minimal announcement:
 ```js
